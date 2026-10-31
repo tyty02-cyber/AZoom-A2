@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My booking · AZoom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="index.html"><span>A</span>Zoom</a>
+    <nav>
+      <a href="index.html">Cars</a>
+      <a href="about.html">About Us</a>
+      <a href="customer.html">My booking</a>
+      <a href="login.html" id="accountLink">Log in</a>
+      <a href="staff.html" id="staffNav">Staff</a>
+      <button class="ghost" id="theme" aria-label="Toggle dark mode">Theme</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>My booking</h2>
+    <div id="myBookings"></div>
+
+    <div class="panel">
+      <label for="bookingId">Booking ID</label>
+      <p style="display:flex; gap:.6rem; margin:0">
+        <input id="bookingId" placeholder="e.g. AZ1002">
+        <button id="findBtn">Find booking</button>
+      </p>
+      <div class="msg" id="lookupError" role="alert"></div>
+    </div>
+
+    <div id="result"></div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    let current = null;
+
+    function drawMyBookings() {
+      const me = currentCustomer();
+      if (!me) {
+        $("myBookings").innerHTML = `
+          <div class="panel">
+            <p style="margin:0">Have an account? <a href="login.html">Log in</a> to see all your bookings here.
+               Or look one up with its booking ID below.</p>
+          </div>`;
+        return;
+      }
+
+      const mine = bookingsFor(me.email);
+      const rows = mine.map(b => `
+        <button class="ghost" style="margin:0 .5rem .5rem 0" data-id="${b.id}">
+          ${b.id} · ${car(b.carId).name} · ${b.status}
+        </button>`).join("");
+
+      $("myBookings").innerHTML = `
+        <div class="panel">
+          <h3>Hi ${esc(me.name)}</h3>
+          ${mine.length
+            ? `<p>Your bookings. Click one to see it:</p>${rows}`
+            : `<p style="margin:0">You have no bookings yet. <a href="index.html">Browse our cars</a>.</p>`}
+        </div>`;
+    }
+
+    $("myBookings").onclick = e => {
+      const id = e.target.dataset.id;
+      if (!id) return;
+      current = findBooking(id);
+      $("lookupError").textContent = "";
+      showBooking();
+    };
+
+    function billTable(b) {
+      const amounts = bill(b);
+      const damageNote = b.damages.length ? " (" + b.damages.join(", ") + ")" : "";
+      return `
+        <table>
+          <tr><td>Rental (${b.days} × ${money(car(b.carId).rate)})</td><td>${money(amounts.rent)}</td></tr>
+          <tr><td>Damage charges${damageNote}</td><td>${money(amounts.damage)}</td></tr>
+          <tr><th>Total</th><th>${money(amounts.total)}</th></tr>
+        </table>`;
+    }
+
+    function showBooking() {
+      const b = current;
+      const c = car(b.carId);
+      const total = bill(b).total;
+      let action = "";
+
+      if (b.status === "Reserved") {
+        action = `<p>Collect your car at <strong>${pickupOf(b)}</strong> and show this booking ID to AZoom staff.</p>`;
+      }
+      if (b.status === "Rented") {
+        action = `
+          <h3>Return your car</h3>
+          <label for="parkSelect">Car park where you left it</label>
+          <select id="parkSelect">
+            ${CAR_PARKS.map(p => `<option>${p}</option>`).join("")}
+          </select>
+          <p><button id="returnBtn">Return car</button></p>`;
+      }
+      if (b.status === "Returned") {
+        action = `<p>Thanks! Staff will inspect your car shortly. Check back soon for your final bill.</p>`;
+      }
+      if (b.status === "Inspected") {
+        action = `
+          <h3>Final bill</h3>
+          ${billTable(b)}
+          <p><button id="payBtn">Pay ${money(total)}</button></p>`;
+      }
+      if (b.status === "Paid") {
+        action = `
+          <h3>Receipt</h3>
+          ${billTable(b)}
+          <p class="tag ok">Paid in full. Thank you for choosing AZoom.</p>`;
+      }
+
+      $("result").innerHTML = `
+        <div class="panel">
+          <h3>${c.name} · ${b.id}</h3>
+          <p>${esc(b.name)} · ${b.days} day(s): ${b.start} to ${b.end || addDays(b.start, b.days)}</p>
+          ${progress(b.status)}
+          ${action}
+        </div>`;
+
+      if ($("returnBtn")) {
+        $("returnBtn").onclick = () => {
+          b.status = "Returned";
+          b.carPark = $("parkSelect").value;
+          save();
+          toast("Car returned. Awaiting inspection.");
+          showBooking();
+        };
+      }
+      if ($("payBtn")) {
+        $("payBtn").onclick = () => {
+          b.status = "Paid";
+          save();
+          toast("Payment received.");
+          showBooking();
+        };
+      }
+      drawMyBookings();
+    }
+
+    $("findBtn").onclick = () => {
+      bookings = load();
+      const b = findBooking($("bookingId").value);
+      if (!b) {
+        $("lookupError").textContent = "No booking found with that ID. Check it and try again.";
+        $("result").innerHTML = "";
+        return;
+      }
+      $("lookupError").textContent = "";
+      current = b;
+      showBooking();
+    };
+
+    $("bookingId").onkeydown = e => {
+      if (e.key === "Enter") $("findBtn").click();
+    };
+
+    const idFromLink = new URLSearchParams(location.search).get("id");
+    if (idFromLink) {
+      $("bookingId").value = idFromLink;
+      $("findBtn").click();
+    }
+
+    drawMyBookings();
+  </script>
+</body>
+</html>

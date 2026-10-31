@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About · AZoom Car Rental</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .intro { max-width: 70ch; font-size: 1.1rem; }
+    main h2 { margin-top: 2.5rem; }
+    main h2:first-child { margin-top: 0; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat b {
+      display: block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 3rem;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 1rem;
+    }
+    .how {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .how:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .how .num {
+      display: inline-grid;
+      place-items: center;
+      width: 2.2rem; height: 2.2rem;
+      border-radius: 50%;
+      background: var(--sign);
+      color: var(--road);
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .how h3 { margin-bottom: 0.3rem; }
+    .how p { margin: 0; }
+    .parks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      padding: 0;
+      list-style: none;
+    }
+    .parks li {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--sign);
+      border-radius: 8px;
+      padding: 0.5rem 0.9rem;
+    }
+    details {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+    summary { cursor: pointer; font-weight: 600; }
+    details p { margin: 0.6rem 0 0; }
+    .contact {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+    .contact .panel { margin: 0; }
+    .cta { margin-top: 2.5rem; text-align: center; }
+    .cta .btn {
+      display: inline-block;
+      text-decoration: none;
+      font-size: 1.1rem;
+      padding: 0.8rem 1.6rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="index.html"><span>A</span>Zoom</a>
+    <nav>
+      <a href="index.html">Cars</a>
+      <a href="about.html">About Us</a>
+      <a href="customer.html">My booking</a>
+      <a href="login.html" id="accountLink">Log in</a>
+      <a href="staff.html" id="staffNav">Staff</a>
+      <button class="ghost" id="theme" aria-label="Toggle dark mode">Theme</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>About AZoom</h1>
+    <p>Simple, honest electric car rental. Book online, collect from one of our two locations, return to any of our car parks.</p>
+    <div class="lane"></div>
+  </section>
+
+  <main>
+    <h2>Our story</h2>
+    <p class="intro">
+      AZoom Car Rental was started with one idea: renting an electric car should take minutes, not paperwork.
+      You choose a car and pay online, our team hands you the keys at your chosen location, and when you're
+      done you simply leave the car at one of our designated car parks. We inspect every returned
+      car and charge only for damage we actually find, so your final bill is always clear and fair.
+    </p>
+
+    <h2>AZoom at a glance</h2>
+    <div class="stats">
+      <div class="stat"><b id="statCars">0</b>electric cars</div>
+      <div class="stat"><b id="statParks">0</b>return car parks</div>
+      <div class="stat"><b>5</b>simple steps</div>
+      <div class="stat"><b>24/7</b>online booking</div>
+    </div>
+
+    <h2>How it works</h2>
+    <div class="how-grid">
+      <div class="how">
+        <div class="num">1</div>
+        <h3>Reserve</h3>
+        <p>Pick an EV and pay securely with your credit card on this website.</p>
+      </div>
+      <div class="how">
+        <div class="num">2</div>
+        <h3>Collect</h3>
+        <p>Show your booking ID at your chosen AZoom pick-up location and our team hands over the car.</p>
+      </div>
+      <div class="how">
+        <div class="num">3</div>
+        <h3>Return</h3>
+        <p>Drive back and leave the car at one of our designated car parks.</p>
+      </div>
+      <div class="how">
+        <div class="num">4</div>
+        <h3>Inspect</h3>
+        <p>An AZoom employee checks the car and records any damage.</p>
+      </div>
+      <div class="how">
+        <div class="num">5</div>
+        <h3>Pay</h3>
+        <p>See your final bill (rental + any damage) and pay online.</p>
+      </div>
+    </div>
+
+    <h2>Where to return your car</h2>
+    <ul class="parks" id="parkList"></ul>
+
+    <h2>Frequently asked questions</h2>
+    <details>
+      <summary>How do I reserve a car?</summary>
+      <p>Log in, go to the Cars page and choose an electric car. Then pick your pick-up location, your pick-up and return dates, and enter your credit card. You'll get a booking ID straight away.</p>
+    </details>
+    <details>
+      <summary>What do I bring when I collect the car?</summary>
+      <p>Just your booking ID. Show it to AZoom staff at your chosen pick-up location and they will hand over the car.</p>
+    </details>
+    <details>
+      <summary>Where do I return the car?</summary>
+      <p>At any of our designated car parks listed above. Choose the one you used on the My booking page.</p>
+    </details>
+    <details>
+      <summary>How are damages charged?</summary>
+      <p>After you return the car, an employee inspects it. If damage is found, a fixed fee is added to your bill:</p>
+      <p id="feeList"></p>
+    </details>
+    <details>
+      <summary>How do I pay my final bill?</summary>
+      <p>Open My booking, enter your booking ID, and once the inspection is done you'll see an itemised bill and a Pay button.</p>
+    </details>
+
+    <h2>Visit or contact us</h2>
+    <div class="contact">
+      <div class="panel">
+        <h3>AZoom Car Rental Office</h3>
+        <p>Yee Yee Street 99<br>Singapore 999999</p>
+      </div>
+      <div class="panel">
+        <h3>Opening hours</h3>
+        <p>Monday to Sunday<br>8:00 am to 8:00 pm</p>
+      </div>
+      <div class="panel">
+        <h3>Get in touch</h3>
+        <p>hello@azoom.example<br>+65 1234 5678</p>
+      </div>
+    </div>
+
+    <div class="cta">
+      <a class="btn" href="index.html">Browse our electric cars</a>
+    </div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+    $("statCars").textContent = CARS.length;
+    $("statParks").textContent = CAR_PARKS.length;
+    $("parkList").innerHTML = CAR_PARKS.map(p => `<li>${p}</li>`).join("");
+    $("feeList").textContent = Object.entries(DAMAGE_FEES)
+      .map(([name, fee]) => `${name} ${money(fee)}`)
+      .join(" · ");
+  </script>
+</body>
+</html>

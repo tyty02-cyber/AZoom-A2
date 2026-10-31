@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff Desk · AZoom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="index.html"><span>A</span>Zoom</a>
+    <nav>
+      <a href="index.html">Cars</a>
+      <a href="about.html">About Us</a>
+      <a href="customer.html">My booking</a>
+      <a href="login.html" id="accountLink">Log in</a>
+      <a href="staff.html" id="staffNav">Staff</a>
+      <button class="ghost" id="theme" aria-label="Toggle dark mode">Theme</button>
+    </nav>
+  </header>
+
+  <main>
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem">
+      <h2>Staff Desk</h2>
+      <p>
+        <span id="staffName"></span>
+        <button class="ghost" id="logoutBtn">Log out</button>
+      </p>
+    </div>
+
+    <div class="panel scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Car</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <div id="inspectPanel" class="panel" hidden></div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+
+    // Must be staff – otherwise send to the single login page
+    if (!currentStaff()) {
+      location.href = "login.html";
+    } else {
+      $("staffName").textContent = "Signed in as " + currentStaff();
+      drawTable();
+    }
+
+    $("logoutBtn").onclick = () => {
+      logOut();
+      toast("Logged out.");
+      location.href = "login.html";
+    };
+
+    function drawTable() {
+      bookings = load();
+      $("rows").innerHTML = bookings.map(b => {
+        let action = "Waiting for customer";
+        if (b.status === "Reserved") {
+          action = `<button data-action="rent" data-id="${b.id}">Hand over car</button>`;
+        }
+        if (b.status === "Returned") {
+          action = `<button data-action="inspect" data-id="${b.id}">Inspect car</button>`;
+        }
+        if (b.status === "Paid") action = "Completed";
+
+        // Reserved cars show where they are collected; returned cars show where they were left
+        let carPark = b.carPark ? `<br><small>Returned at ${b.carPark}</small>` : "";
+        if (b.status === "Reserved") carPark = `<br><small>Pick-up: ${pickupOf(b)}</small>`;
+
+        return `
+          <tr>
+            <td>${b.id}</td>
+            <td>${esc(b.name)}</td>
+            <td>${car(b.carId).name}</td>
+            <td>${b.status}${carPark}</td>
+            <td>${action}</td>
+          </tr>`;
+      }).join("");
+    }
+
+    function openInspection(b) {
+      const panel = $("inspectPanel");
+      panel.hidden = false;
+      panel.innerHTML = `
+        <h3>Inspect ${car(b.carId).name} (${b.id})</h3>
+        <p>Tick every problem found. Leave all unticked if the car is undamaged.</p>
+        <div class="checks">
+          ${Object.entries(DAMAGE_FEES).map(([name, fee]) => `
+            <label>
+              <input type="checkbox" value="${name}" data-fee="${fee}"> ${name} (${money(fee)})
+            </label>`).join("")}
+        </div>
+        <div class="total"><span>Damage total</span><span id="damageTotal">$0.00</span></div>
+        <p style="display:flex; gap:.6rem">
+          <button id="saveInspection">Save inspection</button>
+          <button class="ghost" id="cancelInspection">Cancel</button>
+        </p>`;
+
+      const boxes = [...panel.querySelectorAll("input[type=checkbox]")];
+      const ticked = () => boxes.filter(box => box.checked);
+      const sumFees = list => list.reduce((sum, box) => sum + +box.dataset.fee, 0);
+
+      boxes.forEach(box => {
+        box.onchange = () => $("damageTotal").textContent = money(sumFees(ticked()));
+      });
+
+      $("cancelInspection").onclick = () => panel.hidden = true;
+
+      $("saveInspection").onclick = () => {
+        if (!currentStaff()) return;
+        const found = ticked();
+        b.damages = found.map(box => box.value);
+        b.damageFee = sumFees(found);
+        b.status = "Inspected";
+        save();
+        panel.hidden = true;
+        toast("Inspection saved. Customer can now pay.");
+        drawTable();
+      };
+
+      panel.scrollIntoView({ behavior: "smooth" });
+    }
+
+    $("rows").onclick = e => {
+      if (!currentStaff()) return;
+      const id = e.target.dataset.id;
+      const action = e.target.dataset.action;
+      if (!id) return;
+      const b = findBooking(id);
+
+      if (action === "rent") {
+        b.status = "Rented";
+        save();
+        toast(b.id + " handed over.");
+        drawTable();
+      }
+      if (action === "inspect") openInspection(b);
+    };
+  </script>
+</body>
+</html>

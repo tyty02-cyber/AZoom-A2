@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>AZoom Car Rental – Electric Fleet</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* Custom AZoom login popup */
+    .login-popup-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 99999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 20px !important;
+      box-sizing: border-box !important;
+      background: rgba(0, 0, 0, 0.72) !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .login-popup-overlay .login-popup {
+      display: block !important;
+      position: relative !important;
+      width: 100% !important;
+      max-width: 420px !important;
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: 90vh !important;
+      overflow-y: auto !important;
+      box-sizing: border-box !important;
+      margin: 0 !important;
+      padding: 32px 28px !important;
+      border: 1px solid #e5e5e5 !important;
+      border-radius: 18px !important;
+      background: #ffffff !important;
+      color: #222222 !important;
+      text-align: center !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.3) !important;
+      font-family: "Barlow", sans-serif !important;
+    }
+
+    .login-popup .login-popup-logo {
+      display: block !important;
+      position: static !important;
+      margin: 0 0 14px !important;
+      padding: 0 !important;
+      background: transparent !important;
+      color: #222222 !important;
+      font-family: "Barlow Condensed", sans-serif !important;
+      font-size: 42px !important;
+      font-weight: 800 !important;
+      line-height: 1.2 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .login-popup .login-popup-logo span {
+      display: inline !important;
+      color: #e5a900 !important;
+    }
+
+    .login-popup #loginPopupMessage {
+      display: block !important;
+      position: static !important;
+      margin: 12px 0 26px !important;
+      padding: 0 !important;
+      background: transparent !important;
+      color: #333333 !important;
+      font-family: "Barlow", sans-serif !important;
+      font-size: 16px !important;
+      font-weight: 400 !important;
+      line-height: 1.65 !important;
+      overflow: visible !important;
+      white-space: normal !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .login-popup .login-popup-buttons {
+      display: flex !important;
+      position: static !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex-wrap: wrap !important;
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: transparent !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .login-popup .login-popup-buttons button {
+      display: inline-block !important;
+      position: static !important;
+      flex: 0 1 auto !important;
+      width: auto !important;
+      min-width: 100px !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 12px 20px !important;
+      border: 1px solid #d4d4d4 !important;
+      border-radius: 9px !important;
+      background: #f2f2f2 !important;
+      color: #222222 !important;
+      font-family: "Barlow", sans-serif !important;
+      font-size: 15px !important;
+      font-weight: 600 !important;
+      line-height: 1.4 !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      cursor: pointer !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .login-popup .login-popup-buttons #loginPopupBtn {
+      border-color: #222222 !important;
+      background: #222222 !important;
+      color: #ffffff !important;
+    }
+
+    .login-popup .login-popup-buttons button:hover {
+      filter: brightness(0.92);
+    }
+
+    .login-popup .login-popup-buttons button:focus-visible {
+      outline: 3px solid #e5a900 !important;
+      outline-offset: 3px !important;
+    }
+
+    @media (max-width: 420px) {
+      .login-popup-overlay .login-popup {
+        padding: 26px 20px !important;
+      }
+
+      .login-popup .login-popup-buttons {
+        flex-direction: column !important;
+      }
+
+      .login-popup .login-popup-buttons button {
+        width: 100% !important;
+      }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .login-popup {
+        animation: azoomPopupAppear 0.2s ease-out;
+      }
+
+      @keyframes azoomPopupAppear {
+        from {
+          transform: translateY(8px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation -->
+  <header class="nav">
+    <a class="logo" href="index.html"><span>A</span>Zoom</a>
+
+    <nav>
+      <a href="index.html">Cars</a>
+      <a href="about.html">About Us</a>
+      <a href="customer.html">My booking</a>
+      <a href="login.html" id="accountLink">Log in</a>
+      <a href="staff.html" id="staffNav">Staff</a>
+      <button class="ghost" id="theme" type="button" aria-label="Toggle dark mode">
+        Theme
+      </button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Book it online.<br>Drive electric today.</h1>
+    <p>
+      Reserve a fully electric car online, collect it at one of our two locations,
+      and return it to one of our designated car parks.
+    </p>
+    <div class="lane"></div>
+  </section>
+
+  <!-- Car listings -->
+  <main>
+    <h2>Choose your electric car</h2>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <!-- Reservation dialog -->
+  <dialog id="dlg">
+    <h2 id="dlgTitle">Reserve a car</h2>
+
+    <form id="reserveForm" novalidate>
+      <label for="custName">Full name</label>
+      <input id="custName" type="text" autocomplete="name" required>
+
+      <label for="custEmail">Email</label>
+      <input id="custEmail" type="email" autocomplete="email" required>
+
+      <!-- Where the customer collects the car -->
+      <label for="pickupPlace">Pick-up location</label>
+      <select id="pickupPlace"></select>
+
+      <!-- Rental period: start and return dates -->
+      <div class="row">
+        <div>
+          <label for="startDate">Pick-up date</label>
+          <input id="startDate" type="date" required>
+        </div>
+
+        <div>
+          <label for="endDate">Return date</label>
+          <input id="endDate" type="date" required>
+        </div>
+      </div>
+
+      <p class="note" id="rentalLength" style="margin:.5rem 0 0"></p>
+      <small>You will choose which car park to return the car to when you drop it off.</small>
+
+      <label for="cardNo">Credit card number</label>
+      <input
+        id="cardNo"
+        type="text"
+        inputmode="numeric"
+        placeholder="4111 1111 1111 1111"
+        autocomplete="cc-number"
+        required
+      >
+      <small>Demo card number: 4111 1111 1111 1111</small>
+
+      <div class="row">
+        <div>
+          <label for="cardExp">Expiry (MM/YY)</label>
+          <input
+            id="cardExp"
+            type="text"
+            placeholder="08/28"
+            autocomplete="cc-exp"
+            maxlength="5"
+            required
+          >
+          <small>Enter a future expiry date</small>
+        </div>
+
+        <div>
+          <label for="cardCvv">CVV</label>
+          <input
+            id="cardCvv"
+            type="password"
+            inputmode="numeric"
+            maxlength="4"
+            autocomplete="cc-csc"
+            required
+          >
+          <small>Enter 3 or 4 digits</small>
+        </div>
+      </div>
+
+      <div class="msg" id="formError" role="alert"></div>
+
+      <div class="total">
+        <span>Total</span>
+        <span id="totalPrice">$0.00</span>
+      </div>
+
+      <p style="display:flex; gap:.6rem; margin-top:1rem">
+        <button type="submit">Reserve</button>
+        <button type="button" class="ghost" id="cancelBtn">Cancel</button>
+      </p>
+    </form>
+
+    <!-- Confirmation -->
+    <div id="confirmation" hidden></div>
+  </dialog>
+
+  <!-- Shared data and logic -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    let selectedCar = null;
+    let typeFilter = "All";
+
+    // Today's date in local YYYY-MM-DD format.
+    function todayLocal() {
+      const date = new Date();
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      return date.toISOString().slice(0, 10);
+    }
+
+    // Render car filters and listings.
+    function renderCars() {
+      const types = ["All", ...new Set(CARS.map(c => c.type))];
+
+      $("filters").innerHTML = types.map(type => `
+        <button
+          type="button"
+          class="${type === typeFilter ? "on" : ""}"
+          data-type="${type}"
+        >${type}</button>
+      `).join("");
+
+      $("grid").innerHTML = CARS
+        .filter(c => typeFilter === "All" || c.type === typeFilter)
+        .map(c => {
+          const busy = isBusy(c.id);
+
+          return `
+            <article class="car">
+              <div class="pic">
+                <img src="${c.img}" alt="${c.name}" loading="lazy">
+              </div>
+
+              <div class="body">
+                <h3>${c.name}</h3>
+
+                <span class="tag ${busy ? "bad" : "ok"}">
+                  ${busy ? "Unavailable" : "Available"}
+                </span>
+
+                <span>${c.type} · ${c.seats} seats · EV</span>
+
+                <div class="price">
+                  ${money(c.rate)}
+                  <small>per day</small>
+                </div>
+
+                <button
+                  type="button"
+                  data-id="${c.id}"
+                  ${busy ? "disabled" : ""}
+                >Reserve</button>
+              </div>
+            </article>
+          `;
+        }).join("");
+    }
+
+    // Filter cars by type.
+    $("filters").addEventListener("click", event => {
+      const type = event.target.dataset.type;
+
+      if (type) {
+        typeFilter = type;
+        renderCars();
+      }
+    });
+
+    // Handle Reserve button clicks.
+    $("grid").addEventListener("click", event => {
+      const id = event.target.dataset.id;
+
+      if (id) {
+        openReserve(Number(id));
+      }
+    });
+
+    // Show a branded login popup.
+    function showLoginPopup() {
+      if ($("loginPopupOverlay")) return;
+
+      const overlay = document.createElement("div");
+      overlay.id = "loginPopupOverlay";
+      overlay.className = "login-popup-overlay";
+
+      const popup = document.createElement("section");
+      popup.className = "login-popup";
+      popup.setAttribute("role", "dialog");
+      popup.setAttribute("aria-modal", "true");
+      popup.setAttribute("aria-labelledby", "loginPopupTitle");
+      popup.setAttribute("aria-describedby", "loginPopupMessage");
+
+      const title = document.createElement("h2");
+      title.className = "login-popup-logo";
+      title.id = "loginPopupTitle";
+
+      const logoA = document.createElement("span");
+      logoA.textContent = "A";
+      title.append(logoA, document.createTextNode("Zoom"));
+
+      const message = document.createElement("p");
+      message.id = "loginPopupMessage";
+      message.textContent =
+        "AZoom requires you to log in before making a reservation.";
+
+      const buttons = document.createElement("div");
+      buttons.className = "login-popup-buttons";
+
+      const loginButton = document.createElement("button");
+      loginButton.type = "button";
+      loginButton.id = "loginPopupBtn";
+      loginButton.textContent = "Log in";
+
+      const cancelButton = document.createElement("button");
+      cancelButton.type = "button";
+      cancelButton.id = "closePopupBtn";
+      cancelButton.textContent = "Cancel";
+
+      loginButton.addEventListener("click", () => {
+        location.href = "login.html";
+      });
+
+      cancelButton.addEventListener("click", closePopup);
+
+      buttons.append(loginButton, cancelButton);
+      popup.append(title, message, buttons);
+      overlay.appendChild(popup);
+      document.body.appendChild(overlay);
+
+      function handleEscape(event) {
+        if (event.key === "Escape") {
+          closePopup();
+        }
+      }
+
+      function closePopup() {
+        overlay.remove();
+        document.removeEventListener("keydown", handleEscape);
+      }
+
+      overlay.addEventListener("click", event => {
+        if (event.target === overlay) {
+          closePopup();
+        }
+      });
+
+      document.addEventListener("keydown", handleEscape);
+
+      cancelButton.focus();
+    }
+
+    // Open the reservation form only for logged-in customers.
+    function openReserve(carId) {
+      const me = currentCustomer();
+
+      if (!me) {
+        showLoginPopup();
+        return;
+      }
+
+      selectedCar = car(carId);
+
+      if (!selectedCar) {
+        return;
+      }
+
+      if (isBusy(selectedCar.id)) {
+        renderCars();
+        return;
+      }
+
+      $("reserveForm").reset();
+
+      $("reserveForm").hidden = false;
+      $("confirmation").hidden = true;
+      $("formError").textContent = "";
+
+      $("custName").value = me.name;
+      $("custEmail").value = me.email;
+
+      $("custName").readOnly = true;
+      $("custEmail").readOnly = true;
+
+      // Pick-up location: one of our designated locations
+      $("pickupPlace").innerHTML = CAR_PARKS
+        .map(place => `<option>${place}</option>`)
+        .join("");
+
+      // Dates: start today, return tomorrow (the customer can change both)
+      const today = todayLocal();
+      $("startDate").min = today;
+      $("startDate").value = today;
+      $("endDate").min = addDays(today, 1);
+      $("endDate").value = addDays(today, 1);
+
+      $("dlgTitle").textContent = "Reserve " + selectedCar.name;
+
+      updateTotal();
+      $("dlg").showModal();
+    }
+
+    // Number of rental days between the chosen start and return dates.
+    function rentalDays() {
+      const start = $("startDate").value;
+      const end = $("endDate").value;
+
+      if (!start || !end) return 0;
+      return daysBetween(start, end);
+    }
+
+    // Calculate total rental cost and show the rental length.
+    function updateTotal() {
+      const days = rentalDays();
+      const valid = selectedCar && days >= 1;
+
+      $("totalPrice").textContent = money(valid ? selectedCar.rate * days : 0);
+      $("rentalLength").textContent = days >= 1 ? "Rental length: " + days + " day(s)" : "";
+    }
+
+    // When the pick-up date changes, keep the return date after it.
+    ["input", "change"].forEach(eventName => {
+      $("startDate").addEventListener(eventName, () => {
+        const start = $("startDate").value;
+        if (!start) return;
+
+        $("endDate").min = addDays(start, 1);
+
+        if (!$("endDate").value || $("endDate").value <= start) {
+          $("endDate").value = addDays(start, 1);
+        }
+        updateTotal();
+      });
+
+      $("endDate").addEventListener(eventName, updateTotal);
+    });
+
+    // Validate the reservation form.
+    function findProblem() {
+      const name = $("custName").value.trim();
+      const email = $("custEmail").value.trim();
+      const start = $("startDate").value;
+      const end = $("endDate").value;
+      const days = rentalDays();
+
+      if (!name) {
+        return [$("custName"), "Enter your full name."];
+      }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return [$("custEmail"), "Enter a valid email address."];
+      }
+
+      if (!$("pickupPlace").value) {
+        return [$("pickupPlace"), "Choose a pick-up location."];
+      }
+
+      if (!start || start < todayLocal()) {
+        return [$("startDate"), "Choose a pick-up date from today onwards."];
+      }
+
+      if (!end) {
+        return [$("endDate"), "Choose a return date."];
+      }
+
+      if (days < 1) {
+        return [$("endDate"), "The return date must be after the pick-up date."];
+      }
+
+      if (!luhn($("cardNo").value)) {
+        return [$("cardNo"), "Enter a valid demo card number."];
+      }
+
+      if (!validExpiry($("cardExp").value)) {
+        return [$("cardExp"), "Enter a future expiry date in MM/YY format."];
+      }
+
+      if (!/^\d{3,4}$/.test($("cardCvv").value)) {
+        return [$("cardCvv"), "Enter a 3 or 4 digit CVV."];
+      }
+
+      return null;
+    }
+
+    // Save and confirm the reservation.
+    function submitReservation(event) {
+      event.preventDefault();
+
+      const me = currentCustomer();
+
+      if (!me) {
+        $("dlg").close();
+        showLoginPopup();
+        return;
+      }
+
+      if (!selectedCar) {
+        $("formError").textContent = "Please select a car first.";
+        return;
+      }
+
+      if (isBusy(selectedCar.id)) {
+        $("formError").textContent =
+          "Sorry, this car is no longer available. Please choose another car.";
+        renderCars();
+        return;
+      }
+
+      [...$("reserveForm").elements].forEach(element => {
+        element.classList.remove("err");
+      });
+
+      $("formError").textContent = "";
+
+      const problem = findProblem();
+
+      if (problem) {
+        const [field, message] = problem;
+
+        field.classList.add("err");
+        $("formError").textContent = message;
+        field.focus();
+
+        return;
+      }
+
+      const cardDigits = $("cardNo").value.replace(/\D/g, "");
+      const maskedCard = "**** " + cardDigits.slice(-4);
+
+      const booking = {
+        id: newId(),
+        carId: selectedCar.id,
+        name: me.name,
+        email: me.email,
+        pickup: $("pickupPlace").value,
+        start: $("startDate").value,
+        end: $("endDate").value,
+        days: rentalDays(),
+        status: "Reserved",
+        carPark: "",
+        damageFee: 0,
+        damages: [],
+        card: maskedCard
+      };
+
+      bookings.push(booking);
+      save();
+
+      $("reserveForm").hidden = true;
+      $("confirmation").hidden = false;
+
+      $("confirmation").innerHTML = `
+        <h2>Reservation successful!</h2>
+        <p>Your booking ID is:</p>
+        <p><strong style="font-size:1.6rem">${booking.id}</strong></p>
+        <p>Car: ${selectedCar.name}</p>
+        <p>Pick-up location: ${booking.pickup}</p>
+        <p>Pick-up date: ${booking.start}</p>
+        <p>Return date: ${booking.end} (${booking.days} day(s))</p>
+        <p>Total rental cost: ${money(selectedCar.rate * booking.days)}</p>
+        <p>Demo payment reference: ${maskedCard}</p>
+        <p>Please keep your booking ID for collection.</p>
+        <button type="button" id="doneBtn">Done</button>
+      `;
+
+      $("doneBtn").addEventListener("click", () => {
+        $("dlg").close();
+      });
+
+      renderCars();
+    }
+
+    $("reserveForm").addEventListener("submit", submitReservation);
+
+    $("cancelBtn").addEventListener("click", () => {
+      $("dlg").close();
+    });
+
+    // Format card number in groups of four.
+    $("cardNo").addEventListener("input", () => {
+      const digits = $("cardNo").value
+        .replace(/\D/g, "")
+        .slice(0, 19);
+
+      $("cardNo").value = digits
+        .replace(/(.{4})/g, "$1 ")
+        .trim();
+    });
+
+    // Format card expiry as MM/YY.
+    $("cardExp").addEventListener("input", () => {
+      const digits = $("cardExp").value
+        .replace(/\D/g, "")
+        .slice(0, 4);
+
+      $("cardExp").value = digits.length >= 3
+        ? digits.slice(0, 2) + "/" + digits.slice(2)
+        : digits;
+    });
+
+    // Display the initial car list.
+    renderCars();
+  </script>
+</body>
+</html>

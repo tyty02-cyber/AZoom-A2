@@ -1,0 +1,463 @@
+/* ==========================================================
+   AZoom Car Rental - styles
+   ========================================================== */
+
+:root {
+  --bg: #f3f5f7;
+  --card: #ffffff;
+  --ink: #1d2125;
+  --muted: #5f6b76;
+  --road: #23272b;
+  --sign: #ffc21a;
+  --ok: #1f9d63;
+  --bad: #d64545;
+  --line: #dde2e7;
+  --r: 10px;
+}
+
+[data-theme="dark"] {
+  --bg: #15181b;
+  --card: #1f2327;
+  --ink: #eef1f4;
+  --muted: #9aa5b0;
+  --line: #323a42;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Barlow', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  font-family: 'Barlow Condensed', 'Barlow', sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  margin: 0 0 0.5em;
+}
+
+h1 {
+  font-size: clamp(2.6rem, 7vw, 4.8rem);
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--sign);
+  outline-offset: 2px;
+}
+
+/* Navigation */
+header.nav {
+  background: var(--road);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-family: 'Barlow Condensed';
+  font-weight: 800;
+  font-size: 1.8rem;
+  text-decoration: none;
+}
+
+.logo span {
+  background: var(--sign);
+  color: var(--road);
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  margin-right: 0.2rem;
+}
+
+header.nav nav {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+  align-items: center;
+}
+
+header.nav nav a {
+  text-decoration: none;
+  padding: 0.3rem 0.2rem;
+  border-bottom: 3px solid transparent;
+}
+
+header.nav nav a:hover,
+header.nav nav a.on {
+  border-color: var(--sign);
+}
+
+/* Buttons */
+button, .btn {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--r);
+  padding: 0.65rem 1.1rem;
+  background: var(--sign);
+  color: var(--road);
+  transition: transform 0.15s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button.ghost {
+  background: transparent;
+  color: inherit;
+  border: 2px solid currentColor;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Hero */
+.hero {
+  background: var(--road);
+  color: #fff;
+  padding: 4rem 1.5rem 5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero p {
+  max-width: 48ch;
+  color: #cfd6dc;
+  font-size: 1.15rem;
+}
+
+.hero .lane {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.6rem;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--sign) 0 50px,
+    transparent 50px 100px
+  );
+  animation: drive 2s linear infinite;
+}
+
+@keyframes drive {
+  to {
+    background-position: -100px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .lane {
+    animation: none;
+  }
+
+  button:hover {
+    transform: none;
+  }
+}
+
+/* Layout */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.2rem;
+}
+
+/* Filters & grid */
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.filters button {
+  background: var(--card);
+  color: var(--ink);
+  border: 2px solid var(--line);
+}
+
+.filters button.on {
+  background: var(--sign);
+  color: var(--road);
+  border-color: var(--sign);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.2rem;
+}
+
+.car {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.car .pic {
+  background: var(--line);
+}
+
+.car .pic img {
+  display: block;
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.car .body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.car .price {
+  font-family: 'Barlow Condensed';
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.car .price small {
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.car button {
+  margin-top: auto;
+}
+
+/* Tags */
+.tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 99px;
+  background: var(--line);
+}
+
+.tag.ok {
+  background: #d5f2e4;
+  color: #14633f;
+}
+
+.tag.bad {
+  background: #fbdcdc;
+  color: #8c2323;
+}
+
+/* Panels & forms */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+  align-items: stretch;
+  height:100%;
+}
+
+/* Login panels: make both boxes equal in height */
+.auth {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 1.5rem;
+}
+
+.auth > .panel {
+  margin-bottom: 0;
+  min-width: 0;
+}
+
+/* Keep login form elements in a consistent vertical layout */
+.auth form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Keep the button and demo-message spacing consistent */
+.auth form > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Make the empty customer placeholder occupy the same space
+   as the staff demo paragraph */
+.auth form .demo {
+  min-height: 1.5em;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin: 0.8rem 0 0.2rem;
+}
+
+input, select {
+  width: 100%;
+  font: inherit;
+  padding: 0.6rem;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+input.err {
+  border-color: var(--bad);
+}
+
+.msg {
+  color: var(--bad);
+  font-size: 0.9rem;
+  min-height: 1.2em;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+/* Dialog */
+dialog {
+  border: 0;
+  border-radius: var(--r);
+  padding: 1.5rem;
+  width: min(480px, 94vw);
+  background: var(--card);
+  color: var(--ink);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+dialog[open] {
+  animation: pop 0.25s;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Barlow Condensed';
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+/* Progress */
+.steps {
+  display: flex;
+  gap: 4px;
+  margin: 1rem 0;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 0.4rem 0;
+  background: var(--line);
+  border-radius: 4px;
+}
+
+.step.done {
+  background: var(--ok);
+  color: #fff;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+/* Inspection */
+.checks label {
+  font-weight: 400;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin: 0.4rem 0;
+}
+
+.checks input {
+  width: auto;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--road);
+  color: #fff;
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--r);
+  border-left: 6px solid var(--sign);
+  z-index: 9;
+}
+
+@media (max-width: 560px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth > .panel {
+    margin-bottom: 0;
+  }
+}

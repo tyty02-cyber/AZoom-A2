@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in · AZoom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Barlow+Condensed:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+      align-items: start;
+    }
+    .auth .panel { margin: 0; }
+    .role-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--sign);
+      color: var(--road);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+    }
+    .demo {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="index.html"><span>A</span>Zoom</a>
+    <nav>
+      <a href="index.html">Cars</a>
+      <a href="about.html">About Us</a>
+      <a href="customer.html">My booking</a>
+      <a href="login.html" id="accountLink">Log in</a>
+      <a href="staff.html" id="staffNav">Staff</a>
+      <button class="ghost" id="theme" aria-label="Toggle dark mode">Theme</button>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Log in to AZoom</h2>
+    <p>Choose the correct section below. You will be taken to your account page automatically.</p>
+
+    <div class="auth">
+      <!-- CUSTOMER -->
+      <section class="panel">
+        <div class="role-badge">Customer</div>
+        <h3>Customer Login</h3>
+        <form id="customerLoginForm" novalidate>
+          <label for="custEmail">Email</label>
+          <input id="custEmail" type="email" autocomplete="email">
+
+          <label for="custPassword">Password</label>
+          <input id="custPassword" type="password" autocomplete="current-password">
+
+          <div class="msg" id="custError" role="alert"></div>
+          <p><button type="submit">Log in as Customer</button></p>
+        </form>
+      </section>
+
+      <!-- STAFF -->
+      <section class="panel">
+        <div class="role-badge">Staff</div>
+        <h3>Staff Login</h3>
+        <form id="staffLoginForm" novalidate>
+          <label for="staffUser">Username</label>
+          <input id="staffUser" autocomplete="username">
+
+          <label for="staffPassword">Password</label>
+          <input id="staffPassword" type="password" autocomplete="current-password">
+
+          <div class="msg" id="staffError" role="alert"></div>
+          <p><button type="submit">Log in as Staff</button></p>
+          <p class="demo">Demo: <strong>staff / azoom123</strong></p>
+        </form>
+      </section>
+    </div>
+
+    <!-- Signup (customers only) -->
+    <div class="panel" style="margin-top:1.5rem; max-width:480px">
+      <h3>New customer? Create an account</h3>
+      <form id="signupForm" novalidate>
+        <label for="signupName">Full name</label>
+        <input id="signupName" autocomplete="name">
+
+        <label for="signupEmail">Email</label>
+        <input id="signupEmail" type="email" autocomplete="email">
+
+        <label for="signupPassword">Password (min 6 characters)</label>
+        <input id="signupPassword" type="password" autocomplete="new-password">
+
+        <label for="signupConfirm">Confirm password</label>
+        <input id="signupConfirm" type="password" autocomplete="new-password">
+
+        <div class="msg" id="signupError" role="alert"></div>
+        <p><button type="submit">Create customer account</button></p>
+        <br><br>
+      </form>
+    </div>
+  </main>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    const $ = id => document.getElementById(id);
+
+    // Already logged in? Send them to the right place
+    if (currentStaff()) location.href = "staff.html";
+    if (currentCustomer()) location.href = "customer.html";
+
+    // Customer login
+    $("customerLoginForm").onsubmit = async e => {
+      e.preventDefault();
+      const user = await logInCustomer($("custEmail").value, $("custPassword").value);
+      if (!user) {
+        $("custError").textContent = "Wrong email or password.";
+        $("custPassword").value = "";
+        return;
+      }
+      location.href = "customer.html";
+    };
+
+    // Staff login
+    $("staffLoginForm").onsubmit = e => {
+      e.preventDefault();
+      const user = logInStaff($("staffUser").value, $("staffPassword").value);
+      if (!user) {
+        $("staffError").textContent = "Wrong username or password.";
+        $("staffPassword").value = "";
+        return;
+      }
+      location.href = "staff.html";
+    };
+
+    // Customer signup
+    $("signupForm").onsubmit = async e => {
+      e.preventDefault();
+      const name = $("signupName").value;
+      const email = $("signupEmail").value;
+      const password = $("signupPassword").value;
+
+      let problem = "";
+      if (!name.trim()) problem = "Enter your full name.";
+      else if (!/^\S+@\S+\.\S+$/.test(email)) problem = "Enter a valid email address.";
+      else if (password.length < 6) problem = "Password must be at least 6 characters.";
+      else if (password !== $("signupConfirm").value) problem = "The two passwords don't match.";
+
+      if (problem) {
+        $("signupError").textContent = problem;
+        return;
+      }
+
+      const user = await createAccount(name, email, password);
+      if (!user) {
+        $("signupError").textContent = "An account with this email already exists.";
+        return;
+      }
+      location.href = "customer.html";
+    };
+  </script>
+</body>
+</html>
